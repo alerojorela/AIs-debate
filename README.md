@@ -1,5 +1,7 @@
 # 🗣️ Autonomous debate between two AIs
 
+**English** · [Español](README.es.md)
+
 A web app where **two local AIs with opposing stances debate a topic**, streaming
 live (token by token) in your browser. It ships with **23 ready-made debates**
 (religion, free will, the meaning of human needs, ethics, politics, technology…),
@@ -77,7 +79,7 @@ If Ollama doesn't respond, it warns clearly but **starts anyway** (the debate wi
 fail until Ollama is available).
 
 Then open **http://localhost:5005**, pick a **scenario** (or write your own topic and
-edit the personas), choose the number of **exchanges**, and click **Iniciar debate**.
+edit the personas), choose the number of **exchanges**, and click **Start debate**.
 
 ## Features
 
@@ -98,40 +100,40 @@ edit the personas), choose the number of **exchanges**, and click **Iniciar deba
   Teo/Ada drive several religious-philosophical debates). Add scenarios or personas
   in `PERSONAS`/`PRESETS` in [scenarios.py](scenarios.py) (each preset carries a
   `group`, `name`, `topic` — all bilingual).
-- **Editable personas and prompts**: expand *⚙️ Perfiles y prompts* to edit each
+- **Editable personas and prompts**: expand *⚙️ Profiles & prompts* to edit each
   AI's *system prompt*. Each persona's **name and stance label** are editable in
   place (click the card header — they're `contenteditable`) and flow through the
   whole UI and the moderator summary.
-- **⚙️ Advanced settings**: the *⚙️ Avanzado* button opens a dialog (Esc or
+- **⚙️ Advanced settings**: the *⚙️ Advanced* button opens a dialog (Esc or
   click-outside to close, disabled while a debate runs) grouping the secondary
   controls — **Generation** (temperature, max sentences, thinking, rigorous &
   academic modes),
   **Models** (per-AI model picker from the models installed in Ollama), **Display**
   (streaming delay) and **Flow** (interactive mode). The main bar keeps only the
   essentials: scenario, topic, exchanges, initial speaker and the action buttons.
-- **Initial speaker** (`Empieza`): choose who opens the debate — the first AI, the
-  second, or **you** (picking "Tú" turns on interactive mode so you can open).
-- **Exchanges** (`Intercambios`): the debate is counted in *exchanges* (rounds).
+- **Initial speaker** (`Starts`): choose who opens the debate — the first AI, the
+  second, or **you** (picking "You" turns on interactive mode so you can open).
+- **Exchanges**: the debate is counted in *exchanges* (rounds).
   **Both AIs are guaranteed to speak at least once per exchange** — even in
   interactive mode, if you keep directing your message to one AI, the other gets a
   turn to close the exchange. The count is **not final**: when the batch ends the
   debate **pauses** rather than stopping (see *End of a round* below). Concluding
   turns are **not forced** at the end of a batch — they happen only on
-  *⏹ Cierre y sumario*.
-- **Temperature** (`Temperatura`): the model's randomness (0 = focused/deterministic,
+  *⏹ Close & summary*.
+- **Temperature**: the model's randomness (0 = focused/deterministic,
   higher = more creative). Default 0.8.
-- **Thinking** (`Habilitar pensamiento`): asks the model to reason (`think:true`
+- **Thinking** (`Enable thinking`): asks the model to reason (`think:true`
   to Ollama). Thinking models such as qwen3.5 reason before answering. **Off by
   default** (thinking is slow — see the speed note below). When enabled, the
   reasoning is **always shown** live in a discreet, collapsible block
-  (`💭 pensamiento`) above the answer, which collapses when the turn ends.
-- **Max sentences** (`Máx. frases`): an upper bound on each reply, requested via
+  (`💭 thinking`) above the answer, which collapses when the turn ends.
+- **Max sentences**: an upper bound on each reply, requested via
   the prompt — the AI may be briefer but is asked **never to exceed it** (a cap,
   not a target to fill). Sentences are used rather than a word/token count because
   LLMs honor a sentence ceiling far more reliably than they count words. The text
   is **never truncated** (it always finishes its thought), and it works **with
   thinking too** (it doesn't consume the reasoning budget). `0 = no limit`.
-- **Rigorous & academic modes** (`Modo riguroso` / `Modo académico`): two
+- **Rigorous & academic modes** (`Rigorous mode` / `Academic mode`): two
   independent toggles that append an instruction to each AI's prompt — *rigorous*
   asks for deeper argumentation (reasons, examples, point-by-point rebuttal,
   nothing asserted without justification); *academic* asks it to define
@@ -139,45 +141,45 @@ edit the personas), choose the number of **exchanges**, and click **Iniciar deba
   **can be combined**, and each one **adds +4** to *Max sentences* and *Exchanges*
   so the AIs have room to develop. Hover either toggle to see the exact appended
   text. Both off by default.
-- **Streaming delay** (`Demora (ms)`): pause between chunks as they're painted on
+- **Streaming delay** (`Delay (ms)`): pause between chunks as they're painted on
   screen, so you can read the **debate turns** at a comfortable pace (default 75 ms).
   `0 = immediate`. Purely visual (it doesn't change Ollama's generation speed). The
   moderator summary is exempt — it renders at full generation speed.
 - **Smart auto-scroll**: the page only sticks to the bottom if you're already
-  there. If you scroll up to re-read, it stops following; a floating **↓ En vivo**
+  there. If you scroll up to re-read, it stops following; a floating **↓ Live**
   button appears to resume following the debate.
-- **Interactive mode** (`Modo interactivo`): join the debate as a third voice.
+- **Interactive mode**: join the debate as a third voice.
   Within each exchange an input bar lets you intervene **as many times as you
   want**:
-  - **Responde:** choose who answers you — the AI still pending this exchange, or
+  - **Replies:** choose who answers you — the AI still pending this exchange, or
     specifically one of the two (lets you address one AI only, repeatedly).
-  - **Enviar ▶** (or Enter): inject your message; the chosen AI responds.
-  - **Reemplazar**: take a slot yourself (no AI reply for it). Marked in the chat
-    (dashed bubble, "suplantando a …") and in the transcript.
-  - **Pasar ⏭**: end your interventions for this exchange; any AI that hasn't
+  - **Send ▶** (or Enter): inject your message; the chosen AI responds.
+  - **Replace**: take a slot yourself (no AI reply for it). Marked in the chat
+    (dashed bubble, "replacing …") and in the transcript.
+  - **Pass ⏭**: end your interventions for this exchange; any AI that hasn't
     spoken yet closes it (this is what guarantees both AIs participate).
   Both AIs see your interjections (marked as the human interlocutor) and the
   moderator summary takes them into account.
 - **End of a round — not a hard ending**: a batch of exchanges never ends the
   debate by itself. When it finishes, the debate **pauses** and offers two
   centered choices:
-  - **▶ Continuar (+N)**: run another batch of exchanges. The `(+N)` reads the
+  - **▶ Continue (+N)**: run another batch of exchanges. The `(+N)` reads the
     **Exchanges** field **live**, so while paused you can resize the next batch
     (shorter or longer) and the label updates as you type. Any previous moderator
     summary is **discarded** — it no longer reflects the longer debate.
-  - **⏹ Cierre y sumario**: first **both AIs make their concluding turn** (no new
-    topics, synthesize, end with their final idea — marked "· cierre"); then an
+  - **⏹ Close & summary**: first **both AIs make their concluding turn** (no new
+    topics, synthesize, end with their final idea — marked "· closing"); then an
     impartial moderator AI analyzes the whole debate (your interjections included),
     focused on **consensus reached, persistent disagreements, and topics left
     under-argued or unanswered** — plus what was best and worst supported. Rendered
     as **Markdown** live in the panel. Once you've closed, this option **disappears**
-    (only *Continuar* remains) until a new batch reopens it. Still **not final**:
+    (only *Continue* remains) until a new batch reopens it. Still **not final**:
     the end bar keeps letting you continue afterwards.
 
   Both the conclusion and the summary are therefore **never automatic** — you
   trigger them. This loop is what keeps the AIs from running on indefinitely: you
   decide, round by round, when to wrap up.
-- **Download transcript**: the *⬇️ Transcripción* button exports the whole debate
+- **Download transcript**: the *⬇️ Transcript* button exports the whole debate
   (with thinking and summary) to a Markdown file.
 
 ## ⚠️ About thinking and speed
@@ -188,7 +190,7 @@ minutes** before the answer began. Because of that:
 
 - Thinking streams **live**, so you see progress instead of staring at a blank
   screen.
-- For a **fast, fluid** debate, uncheck *Habilitar pensamiento*: qwen3.5 without
+- For a **fast, fluid** debate, uncheck *Enable thinking*: qwen3.5 without
   thinking answers in ~3 s per turn and stays perfectly in character.
 - `gemma4` is fast but, with these role-play prompts, tends to "narrate" its
   process instead of acting the character. **qwen3.5 is recommended for both AIs.**
@@ -242,17 +244,17 @@ and `PRESETS`) without touching the Flask logic in `app.py`.
   prompt* for that single request (rebuilt every turn, so they never leak into
   earlier turns). The frontend sends `exchange`, `total` and `closing` in the
   `POST /turn` body, and `/turn` ([app.py](app.py)) turns them into:
-  - **Progress awareness** (every turn): a line such as *"el debate dura N rondas;
-    vais por la ronda X"*. When only one round remains it adds a nudge to start
-    perfilando conclusiones and not open new threads — so the AIs naturally wind
+  - **Progress awareness** (every turn): a line such as *"the debate lasts N rounds;
+    you are on round X"*. When only one round remains it adds a nudge to start
+    shaping conclusions and not open new threads — so the AIs naturally wind
     down as the end approaches.
   - **Closing** (`closing: true`): sent **only** for the dedicated closing
-    exchange triggered by *⏹ Cierre y sumario* (both AIs) — an explicit
+    exchange triggered by *⏹ Close & summary* (both AIs) — an explicit
     instruction: *this is your last turn; no new topics, synthesize your position
     and the conversation, point out the **other's weakest point** and **your own
     strongest**, and end with your final idea*. For the conclusion it may extend up
     to **double** the defined sentence cap (overriding the brevity limit). Closing
-    turns are marked "· cierre" in the chat and the transcript. It is **never** sent
+    turns are marked "· closing" in the chat and the transcript. It is **never** sent
     automatically at the end of a batch of exchanges.
 - The **personas** (name, stance label and a short *system prompt*) live in
   `PERSONAS` in [scenarios.py](scenarios.py); **scenarios** combine a topic with two
@@ -271,7 +273,7 @@ and `PRESETS`) without touching the Flask logic in `app.py`.
 - **New scenarios / personas**: add a `_persona(...)` to `PERSONAS` and a
   `_preset(...)` to `PRESETS` in [scenarios.py](scenarios.py) (topic, name, stance label and
   prompt are all bilingual `{en, es}`). Or just edit the name/label/prompt in the UI
-  (*⚙️ Perfiles y modelos*) before a debate.
+  (*⚙️ Profiles & prompts*) before a debate.
 - **Different model per AI**: assign a model to each one in that same panel.
 - **Temperature**: `temperature` parameter in the request (default 0.8).
 - **Summary**: the moderator uses the `MODERATOR_SYSTEM` prompt in [scenarios.py](scenarios.py).
