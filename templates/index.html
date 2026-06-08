@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autonomous AI debate</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <button id="langbtn" class="langbtn" title="Switch language">ES</button>
+  <h1 id="appTitle" data-i18n="appTitle">🗣️ Debate autónomo de IAs</h1>
+  <div class="sub" id="subtitle"></div>
+</header>
+
+<div class="wrap">
+  <div class="field scenariorow">
+    <label for="preset" data-i18n="lblScenario">Escenario</label>
+    <select id="preset"></select>
+  </div>
+
+  <details class="config">
+    <summary data-i18n="cfgSummary">⚙️ Perfiles y prompts (editar en pantalla)</summary>
+    <div class="grid">
+      <div class="card pro">
+        <h3>🕊️ <span id="namePro" class="editable" contenteditable="true" spellcheck="false">{{ default_preset.pro.nombre }}</span>
+          · <span id="aliasPro" class="editable" contenteditable="true" spellcheck="false">{{ default_preset.pro.etiqueta.en }}</span></h3>
+        <div class="field">
+          <label for="sys_pro" data-i18n="lblSys">System prompt (personalidad y postura)</label>
+          <textarea id="sys_pro">{{ default_preset.pro.system.en }}</textarea>
+        </div>
+      </div>
+      <div class="card con">
+        <h3>🔬 <span id="nameCon" class="editable" contenteditable="true" spellcheck="false">{{ default_preset.con.nombre }}</span>
+          · <span id="aliasCon" class="editable" contenteditable="true" spellcheck="false">{{ default_preset.con.etiqueta.en }}</span></h3>
+        <div class="field">
+          <label for="sys_con" data-i18n="lblSys">System prompt (personalidad y postura)</label>
+          <textarea id="sys_con">{{ default_preset.con.system.en }}</textarea>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <div class="field topicrow">
+    <label for="topic" data-i18n="lblTopic">Tema del debate</label>
+    <input id="topic" value="{{ default_preset.topic.en }}">
+  </div>
+
+  <!-- Main controls -->
+  <div class="controls params">
+    <div class="field">
+      <label for="turns" id="lblExchanges">Intercambios (máx {{ default_max_turns }})</label>
+      <input id="turns" type="number" min="1" max="{{ default_max_turns }}" value="4" style="width:90px"
+             data-i18n-title="ttExchanges">
+    </div>
+    <div class="field">
+      <label for="firstspeaker" data-i18n="lblStarts">Empieza</label>
+      <select id="firstspeaker">
+        <option id="fsPro" value="pro">{{ default_preset.pro.nombre }}</option>
+        <option id="fsCon" value="con">{{ default_preset.con.nombre }}</option>
+        <option id="fsHuman" value="human">Tú (interactivo)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button id="advancedBtn" class="secondary" data-i18n="btnAdvanced" data-i18n-title="ttAdvanced" title="">⚙️ Avanzado</button>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="controls actions">
+    <button id="start" data-i18n="btnStart">Iniciar debate</button>
+    <button id="stop" class="stop" disabled data-i18n="btnStop">Detener</button>
+    <button id="download" class="secondary" disabled data-i18n="btnDownload">⬇️ Transcripción</button>
+  </div>
+
+  <div class="topicbar" id="topicbar"></div>
+
+  <div id="chat"></div>
+  <details class="summary" id="summaryBox" open style="display:none">
+    <summary id="summaryTitle" data-i18n="summaryTitle">⚖️ Resumen del moderador</summary>
+    <div class="text" id="summaryText"></div>
+  </details>
+  <div class="status" id="status"></div>
+  <div class="controls actions" id="endbar" style="display:none">
+    <button id="continueBtn" data-i18n-title="ttContinue" title="">▶ Continuar</button>
+    <button id="resummaryBtn" class="secondary" data-i18n="btnResummary" data-i18n-title="ttResummary" title="">⏹ Cierre y sumario</button>
+  </div>
+</div>
+<button id="golive" data-i18n="golive">↓ En vivo</button>
+
+<div id="humanbar">
+  <div class="humanbar-inner">
+    <textarea id="humaninput" data-i18n-ph="hbPlaceholder"
+      placeholder="Escribe tu intervención…  (Enter envía · Shift+Enter = salto de línea)"></textarea>
+    <div class="humanbar-side">
+      <div id="humanhint" class="hb-hint"></div>
+      <label class="hb-resp"><span data-i18n="hbResp">Responde:</span>
+        <select id="humanresp">
+          <option id="humanrespnext" value="next">Siguiente</option>
+          <option id="hrPro" value="pro">{{ default_preset.pro.nombre }}</option>
+          <option id="hrCon" value="con">{{ default_preset.con.nombre }}</option>
+        </select>
+      </label>
+      <div class="humanbar-btns">
+        <button id="humansend" data-i18n="btnSend">Enviar ▶</button>
+        <button id="humanreplace" class="secondary" data-i18n="btnReplace" data-i18n-title="ttReplace" title="">Reemplazar</button>
+        <button id="humanskip" class="secondary" data-i18n="btnSkip" data-i18n-title="ttSkip" title="">Pasar ⏭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Advanced settings modal -->
+<dialog id="advancedDlg" class="modal">
+  <div class="modal-inner">
+    <div class="modal-head">
+      <h2 data-i18n="dlgTitle">Configuración avanzada</h2>
+      <button id="advClose" class="modal-x" type="button" data-i18n-title="dlgClose" title="">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <section class="modal-group">
+        <h3 data-i18n="grpGeneration">Generación</h3>
+        <div class="controls">
+          <div class="field">
+            <label for="temp" data-i18n="lblTemp">Temperatura</label>
+            <input id="temp" type="number" min="0" max="2" step="0.1" value="0.8" style="width:90px"
+                   data-i18n-title="ttTemp">
+          </div>
+          <div class="field">
+            <label for="maxtokens" id="lenlabel" data-i18n="lblMaxSent">Máx. frases (0 = libre)</label>
+            <input id="maxtokens" type="number" min="0" step="1" value="2" style="width:90px"
+                   data-i18n-title="ttMaxSent">
+          </div>
+        </div>
+        <div class="controls toggles">
+          <label class="field check"><input id="enablethink" type="checkbox"><span data-i18n="chkThink">Habilitar pensamiento</span></label>
+          <label class="field check" data-i18n-title="ttRigor" title=""><input id="rigorous" type="checkbox"><span data-i18n="chkRigor">Modo riguroso</span></label>
+          <label class="field check" data-i18n-title="ttAcademic" title=""><input id="academic" type="checkbox"><span data-i18n="chkAcademic">Modo académico</span></label>
+        </div>
+        <div class="topicbar" id="thinkhint" style="font-style:normal"></div>
+      </section>
+
+      <section class="modal-group">
+        <h3 data-i18n="grpModels">Modelos</h3>
+        <div class="controls">
+          <div class="field grow">
+            <label for="model_pro"><span id="mdlProName" style="color:var(--pro)"></span> · <span data-i18n="lblModel">Modelo</span></label>
+            <select id="model_pro">
+              {% for m in models %}<option value="{{ m }}" {% if m == default_model %}selected{% endif %}>{{ m }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="field grow">
+            <label for="model_con"><span id="mdlConName" style="color:var(--con)"></span> · <span data-i18n="lblModel">Modelo</span></label>
+            <select id="model_con">
+              {% for m in models %}<option value="{{ m }}" {% if m == default_model %}selected{% endif %}>{{ m }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-group">
+        <h3 data-i18n="grpDisplay">Visualización</h3>
+        <div class="controls">
+          <div class="field">
+            <label for="delay" data-i18n="lblDelay">Demora (ms · 0 = inmediato)</label>
+            <input id="delay" type="number" min="0" step="5" value="75" style="width:120px"
+                   data-i18n-title="ttDelay">
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-group">
+        <h3 data-i18n="grpFlow">Flujo</h3>
+        <div class="controls toggles">
+          <label class="field check"><input id="interactive" type="checkbox"><span data-i18n="chkInteractive">Modo interactivo</span></label>
+        </div>
+      </section>
+
+    </div>
+    <div class="modal-foot">
+      <button id="advDone" type="button" data-i18n="dlgDone">Hecho</button>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="presetsData">{{ presets|tojson }}</script>
+<script type="application/json" id="promptLiterals">{{ literals|tojson }}</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
