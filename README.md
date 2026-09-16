@@ -36,8 +36,10 @@ Ollama then runs in the background and listens on `http://localhost:11434`.
 **Docker:**
 
 ```bash
-docker run -d --name ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama
+docker run -d --name ollama -p 127.0.0.1:11434:11434 -v ollama:/root/.ollama ollama/ollama
 # add `--gpus all` if you have an NVIDIA GPU
+# the 127.0.0.1: prefix matters — without it Docker publishes Ollama to your whole
+# local network, and a host firewall will not stop it
 ```
 
 **Pull a model** (this project defaults to `qwen3.5:latest`, recommended — it stays

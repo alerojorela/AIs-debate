@@ -37,7 +37,9 @@ Ollama queda corriendo en segundo plano y escucha en `http://localhost:11434`.
 **Docker:**
 
 ```bash
-docker run -d --name ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama
+docker run -d --name ollama -p 127.0.0.1:11434:11434 -v ollama:/root/.ollama ollama/ollama
+# el prefijo 127.0.0.1: importa: sin él Docker publica Ollama a toda tu red local,
+# y el cortafuegos del sistema no lo impide
 # añade `--gpus all` si tienes una GPU NVIDIA
 ```
 
